@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — Papercargo</title>
+  <meta name="description" content="Privacy policy for Papercargo and the Ouroboros browser extension.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Barlow:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23080B2A'/><text y='.9em' font-size='80' x='50%25' dominant-baseline='middle' text-anchor='middle'>✳</text></svg>">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:       #080B2A;
+      --off-white:  #F0EEE8;
+      --warm-white: #FAFAF7;
+      --ink:        #080B2A;
+      --muted:      rgba(8,11,42,0.45);
+      --light:      rgba(8,11,42,0.12);
+      --border:     rgba(8,11,42,0.08);
+      --iris:       #5B5BD6;
+      --acid:       #C8FF00;
+
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-sans:  'Barlow', 'Helvetica Neue', sans-serif;
+      --font-mono:  'DM Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--off-white);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.7;
+      cursor: none;
+    }
+
+    /* ── Cursor ─────────────────────────────────────────────────────────── */
+    .cursor {
+      width: 6px; height: 6px;
+      background: var(--ink);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+    }
+
+    .cursor-ring {
+      width: 24px; height: 24px;
+      border: 1px solid rgba(8,11,42,0.25);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: width 0.25s, height 0.25s, border-color 0.25s;
+    }
+
+    body:has(a:hover) .cursor-ring {
+      width: 40px; height: 40px;
+      border-color: var(--iris);
+    }
+
+    /* ── Nav ────────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      height: 60px;
+      padding: 0 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(240,238,232,0.92);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav-logo {
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-logo-text {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: var(--ink);
+    }
+
+    .nav-logo-star {
+      font-size: 16px;
+      color: var(--ink);
+    }
+
+    .nav-back {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-back:hover { color: var(--ink); }
+
+    /* ── Layout ─────────────────────────────────────────────────────────── */
+    .page-wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 120px 48px 100px;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    /* ── Sidebar ────────────────────────────────────────────────────────── */
+    .sidebar {
+      position: sticky;
+      top: 90px;
+    }
+
+    .sidebar-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .sidebar-nav {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-bottom: 40px;
+    }
+
+    .sidebar-nav a {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 6px 0;
+      border-left: 2px solid transparent;
+      padding-left: 14px;
+      transition: all 0.2s;
+      line-height: 1.4;
+    }
+
+    .sidebar-nav a:hover {
+      color: var(--ink);
+      border-left-color: var(--iris);
+    }
+
+    .sidebar-meta {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--light);
+      letter-spacing: 0.06em;
+      line-height: 2;
+    }
+
+    .sidebar-contact {
+      margin-top: 32px;
+      padding: 16px;
+      background: rgba(8,11,42,0.04);
+      border-radius: 8px;
+    }
+
+    .sidebar-contact-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .sidebar-contact a {
+      font-size: 13px;
+      color: var(--iris);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .sidebar-contact a:hover { opacity: 0.7; }
+
+    /* ── Content ─────────────────────────────────────────────────────────── */
+    .content {
+      min-width: 0;
+    }
+
+    /* Hero */
+    .doc-hero {
+      margin-bottom: 64px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .doc-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .doc-eyebrow::before {
+      content: '';
+      width: 20px; height: 1px;
+      background: var(--muted);
+    }
+
+    .doc-title {
+      font-family: var(--font-serif);
+      font-size: clamp(40px, 5vw, 64px);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 20px;
+    }
+
+    .doc-subtitle {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 520px;
+    }
+
+    .doc-updated {
+      margin-top: 20px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--light);
+      letter-spacing: 0.08em;
+    }
+
+    /* TL;DR summary card */
+    .tldr {
+      background: var(--navy);
+      color: #e8e8e0;
+      border-radius: 12px;
+      padding: 32px 36px;
+      margin-bottom: 56px;
+    }
+
+    .tldr-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--acid);
+      margin-bottom: 16px;
+    }
+
+    .tldr-title {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+
+    .tldr-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .tldr-item {
+      display: flex;
+      gap: 10px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.5;
+      align-items: flex-start;
+    }
+
+    .tldr-item .check {
+      color: var(--acid);
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-size: 12px;
+    }
+
+    .tldr-item .cross {
+      color: #f87171;
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-size: 12px;
+    }
+
+    /* Sections */
+    .doc-section {
+      margin-bottom: 56px;
+      padding-bottom: 56px;
+      border-bottom: 1px solid var(--border);
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .doc-section:last-child { border-bottom: none; }
+    .doc-section.visible { opacity: 1; transform: translateY(0); }
+
+    .section-number {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .section-heading {
+      font-family: var(--font-serif);
+      font-size: 28px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin-bottom: 20px;
+    }
+
+    .doc-p {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .doc-p:last-child { margin-bottom: 0; }
+
+    /* Data table */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      font-size: 13px;
+    }
+
+    .data-table th {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: left;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 400;
+    }
+
+    .data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      vertical-align: top;
+      line-height: 1.6;
+    }
+
+    .data-table tr:last-child td { border-bottom: none; }
+
+    .data-table td:first-child { color: var(--ink); font-weight: 500; }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 100px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .pill-never  { background: rgba(248,113,113,0.1); color: #ef4444; }
+    .pill-optin  { background: rgba(91,91,214,0.1);  color: var(--iris); }
+    .pill-always { background: rgba(74,222,128,0.1); color: #22c55e; }
+
+    /* Contact block */
+    .contact-block {
+      background: rgba(8,11,42,0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-top: 24px;
+    }
+
+    .contact-block-title {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .contact-block p {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      line-height: 1.7;
+    }
+
+    .contact-block a {
+      font-size: 14px;
+      color: var(--iris);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .contact-block a:hover { text-decoration: underline; }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .footer-logo {
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .footer-logo span:first-child {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: var(--ink);
+      opacity: 0.4;
+    }
+
+    .footer-logo span:last-child {
+      font-size: 14px;
+      color: var(--ink);
+      opacity: 0.4;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+
+    .footer-links a:hover { opacity: 1; }
+
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      opacity: 0.3;
+      letter-spacing: 0.04em;
+    }
+
+    /* Responsive */
+    @media (max-width: 800px) {
+      nav { padding: 0 24px; }
+      .page-wrap {
+        grid-template-columns: 1fr;
+        padding: 100px 24px 80px;
+        gap: 48px;
+      }
+      .sidebar { position: static; }
+      .sidebar-nav { display: none; }
+      .tldr-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; align-items: flex-start; gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursor-ring"></div>
+
+  <!-- Nav -->
+  <nav>
+    <a href="/" class="nav-logo">
+      <span class="nav-logo-text">PAPERCARGO</span>
+      <span class="nav-logo-star">✳</span>
+    </a>
+    <a href="/" class="nav-back">← Back to home</a>
+  </nav>
+
+  <div class="page-wrap">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-label">On this page</div>
+      <ul class="sidebar-nav">
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#what-we-collect">What we collect</a></li>
+        <li><a href="#what-we-never-collect">What we never collect</a></li>
+        <li><a href="#ouroboros">Ouroboros extension</a></li>
+        <li><a href="#waitlist">Waitlist & website</a></li>
+        <li><a href="#storage">Data storage</a></li>
+        <li><a href="#your-rights">Your rights</a></li>
+        <li><a href="#children">Children</a></li>
+        <li><a href="#changes">Changes</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="sidebar-meta">
+        Effective: 26 Feb 2026<br>
+        Applies to: papercargo.com<br>
+        and the Ouroboros extension
+      </div>
+      <div class="sidebar-contact">
+        <div class="sidebar-contact-label">Privacy questions?</div>
+        <a href="mailto:hello@papercargo.com">hello@papercargo.com</a>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="content">
+
+      <!-- Hero -->
+      <div class="doc-hero">
+        <div class="doc-eyebrow">Legal</div>
+        <h1 class="doc-title">Privacy Policy</h1>
+        <p class="doc-subtitle">
+          We built Ouroboros with privacy as a first principle, not an afterthought.
+          This policy explains exactly what we collect, why, and what we will never do
+          with your data — in plain language.
+        </p>
+        <div class="doc-updated">Last updated: 26 February 2026</div>
+      </div>
+
+      <!-- TL;DR -->
+      <div class="tldr">
+        <div class="tldr-label">TL;DR — The short version</div>
+        <div class="tldr-title">What you need to know in 30 seconds</div>
+        <div class="tldr-grid">
+          <div class="tldr-item"><span class="check">✓</span> Your prompts stay on your device by default</div>
+          <div class="tldr-item"><span class="check">✓</span> Your API key is never transmitted to us</div>
+          <div class="tldr-item"><span class="check">✓</span> Data sharing is always opt-in, never on by default</div>
+          <div class="tldr-item"><span class="check">✓</span> You can delete your data any time</div>
+          <div class="tldr-item"><span class="cross">✕</span> We never sell your data</div>
+          <div class="tldr-item"><span class="cross">✕</span> We never share data with advertisers</div>
+          <div class="tldr-item"><span class="cross">✕</span> We never collect data without your knowledge</div>
+          <div class="tldr-item"><span class="cross">✕</span> We never store your API keys on our servers</div>
+        </div>
+      </div>
+
+      <!-- Section 1 -->
+      <div class="doc-section" id="overview">
+        <div class="section-number">01</div>
+        <h2 class="section-heading">Overview</h2>
+        <p class="doc-p">
+          Papercargo ("we", "us", "our") operates the website at papercargo.com
+          and the Ouroboros browser extension ("the extension"). This Privacy Policy
+          describes how we handle information in connection with both.
+        </p>
+        <p class="doc-p">
+          We are committed to minimal data collection. We collect only what is
+          strictly necessary to operate and improve our products, and we give you
+          explicit control over everything we do collect.
+        </p>
+      </div>
+
+      <!-- Section 2 -->
+      <div class="doc-section" id="what-we-collect">
+        <div class="section-number">02</div>
+        <h2 class="section-heading">What we collect</h2>
+        <p class="doc-p">
+          The table below describes every category of data we may collect,
+          the basis for collection, and whether it requires your opt-in.
+        </p>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Why</th>
+              <th>Basis</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Prompt length (character count)</td>
+              <td>Understand usage patterns and complexity distribution</td>
+              <td><span class="pill pill-optin">Opt-in</span></td>
+            </tr>
+            <tr>
+              <td>Complexity classification</td>
+              <td>Measure how well our routing logic works</td>
+              <td><span class="pill pill-optin">Opt-in</span></td>
+            </tr>
+            <tr>
+              <td>Approval decision (accepted / rejected)</td>
+              <td>Understand whether improvements are useful</td>
+              <td><span class="pill pill-optin">Opt-in</span></td>
+            </tr>
+            <tr>
+              <td>Backend type (OpenRouter, Ollama, etc.)</td>
+              <td>Prioritise which integrations to improve</td>
+              <td><span class="pill pill-optin">Opt-in</span></td>
+            </tr>
+            <tr>
+              <td>Time to decision (milliseconds)</td>
+              <td>Measure whether the diff view is being read</td>
+              <td><span class="pill pill-optin">Opt-in</span></td>
+            </tr>
+            <tr>
+              <td>Prompt content (original + improved)</td>
+              <td>Train better prompt improvement models</td>
+              <td><span class="pill pill-optin">Opt-in — separate toggle</span></td>
+            </tr>
+            <tr>
+              <td>Email address (waitlist only)</td>
+              <td>Notify you when new features launch</td>
+              <td><span class="pill pill-always">You provide this</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="doc-p">
+          All event data is tagged with an anonymous session ID generated fresh
+          each browser session. It is never linked to your email address, IP address,
+          or any other identifying information.
+        </p>
+      </div>
+
+      <!-- Section 3 -->
+      <div class="doc-section" id="what-we-never-collect">
+        <div class="section-number">03</div>
+        <h2 class="section-heading">What we never collect</h2>
+        <p class="doc-p">
+          These things are never transmitted to our servers under any circumstance:
+        </p>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Your API key</td>
+              <td>Stored locally in Chrome's encrypted storage only. Never leaves your device.</td>
+            </tr>
+            <tr>
+              <td>Your IP address</td>
+              <td>Not logged by us. Supabase may log it transiently per their infrastructure — see their policy.</td>
+            </tr>
+            <tr>
+              <td>Browsing history</td>
+              <td>We don't track which sites you visit. The extension only activates when you open the drawer.</td>
+            </tr>
+            <tr>
+              <td>Account information</td>
+              <td>Ouroboros has no accounts. There is nothing to collect.</td>
+            </tr>
+            <tr>
+              <td>Prompt content (without opt-in)</td>
+              <td>If you have not toggled on "Share prompt content", we never see your prompts.</td>
+            </tr>
+            <tr>
+              <td>Keystrokes or clipboard</td>
+              <td>We do not log what you type. Provenance tracking is local only.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Section 4 -->
+      <div class="doc-section" id="ouroboros">
+        <div class="section-number">04</div>
+        <h2 class="section-heading">Ouroboros extension — how it works</h2>
+        <p class="doc-p">
+          When you use the Ouroboros extension, your prompt is sent from your browser
+          directly to your chosen AI backend (OpenRouter, Ollama, OpenAI, Anthropic,
+          or Azure OpenAI) using your own API key. <strong>Papercargo never sees this
+          request.</strong>
+        </p>
+        <p class="doc-p">
+          The improved prompt is returned to the extension and displayed in the drawer.
+          You approve or reject it. Only after you take an action does the extension
+          optionally log anonymised metadata to our servers — and only if you have
+          opted in during setup.
+        </p>
+        <p class="doc-p">
+          Your API key is stored in Chrome's local extension storage
+          (<code style="font-family:var(--font-mono);font-size:13px;background:rgba(8,11,42,0.06);padding:2px 6px;border-radius:4px;">chrome.storage.sync</code>),
+          encrypted by Chrome and synced across your signed-in devices if you use
+          Chrome Sync. We have no access to it at any point.
+        </p>
+        <p class="doc-p">
+          Provenance tracking (detecting whether content was typed, pasted, or
+          auto-populated) happens entirely in your browser. This data is never
+          transmitted anywhere.
+        </p>
+      </div>
+
+      <!-- Section 5 -->
+      <div class="doc-section" id="waitlist">
+        <div class="section-number">05</div>
+        <h2 class="section-heading">Waitlist & website</h2>
+        <p class="doc-p">
+          When you sign up for the Ouroboros waitlist at papercargo.com/ouroboros,
+          we collect your email address. We use it to:
+        </p>
+        <p class="doc-p" style="padding-left:20px;border-left:2px solid var(--border);">
+          Notify you when the extension is publicly available or when significant
+          new features launch. That's it. We do not send marketing emails, share
+          your email with third parties, or add you to any other list.
+        </p>
+        <p class="doc-p">
+          Your email is stored in Supabase (see Storage section). You can request
+          deletion at any time by emailing us.
+        </p>
+        <p class="doc-p">
+          The papercargo.com website does not use cookies, analytics trackers, or
+          any third-party scripts beyond Google Fonts (for typography).
+        </p>
+      </div>
+
+      <!-- Section 6 -->
+      <div class="doc-section" id="storage">
+        <div class="section-number">06</div>
+        <h2 class="section-heading">Data storage & security</h2>
+        <p class="doc-p">
+          Anonymised event data and waitlist emails are stored in Supabase, a
+          hosted PostgreSQL service with data centres in the EU. Supabase provides
+          encryption at rest and in transit, and row-level security is enforced
+          so that data can only be inserted — never read — via the public API.
+        </p>
+        <p class="doc-p">
+          Data retained in Supabase is accessible only to Papercargo. We do not
+          grant third parties access to this data. You can review Supabase's own
+          privacy and security policies at
+          <a href="https://supabase.com/privacy" target="_blank" style="color:var(--iris)">supabase.com/privacy</a>.
+        </p>
+        <p class="doc-p">
+          Extension configuration (API key, settings, prompt library) is stored
+          locally using Chrome's storage API. We have no access to this data.
+        </p>
+      </div>
+
+      <!-- Section 7 -->
+      <div class="doc-section" id="your-rights">
+        <div class="section-number">07</div>
+        <h2 class="section-heading">Your rights</h2>
+        <p class="doc-p">
+          Regardless of where you are located, you have the following rights
+          with respect to any personal data we hold:
+        </p>
+        <p class="doc-p">
+          <strong>Access.</strong> You can request a copy of any data we hold about you.<br><br>
+          <strong>Deletion.</strong> You can request deletion of your email from our waitlist
+          or any event data associated with your session ID at any time.<br><br>
+          <strong>Correction.</strong> You can ask us to correct inaccurate data.<br><br>
+          <strong>Portability.</strong> You can request your data in a machine-readable format.<br><br>
+          <strong>Objection.</strong> You can object to processing of your data at any time
+          by turning off data sharing toggles in the extension settings, or by
+          contacting us directly.
+        </p>
+        <p class="doc-p">
+          For extension users: you can clear all locally stored data at any time
+          from the extension's Settings tab → "Clear all data & reconfigure".
+          This removes your API key, configuration, and prompt library from your device instantly.
+        </p>
+        <p class="doc-p">
+          To exercise any of the above rights, email us at
+          <a href="mailto:hello@papercargo.com" style="color:var(--iris)">hello@papercargo.com</a>.
+          We will respond within 30 days.
+        </p>
+      </div>
+
+      <!-- Section 8 -->
+      <div class="doc-section" id="children">
+        <div class="section-number">08</div>
+        <h2 class="section-heading">Children</h2>
+        <p class="doc-p">
+          Our products are not directed at children under the age of 13. We do not
+          knowingly collect personal information from children. If you believe a child
+          has provided us with personal information, please contact us and we will
+          delete it promptly.
+        </p>
+      </div>
+
+      <!-- Section 9 -->
+      <div class="doc-section" id="changes">
+        <div class="section-number">09</div>
+        <h2 class="section-heading">Changes to this policy</h2>
+        <p class="doc-p">
+          We may update this policy as our products evolve. When we make material
+          changes — changes that affect what data we collect or how we use it — we
+          will update the "Last updated" date at the top of this page and, where
+          appropriate, notify waitlist members by email.
+        </p>
+        <p class="doc-p">
+          We will never retroactively apply new data collection practices to data
+          already collected. Any expansion of data collection will require fresh
+          opt-in consent.
+        </p>
+      </div>
+
+      <!-- Section 10 -->
+      <div class="doc-section" id="contact">
+        <div class="section-number">10</div>
+        <h2 class="section-heading">Contact</h2>
+        <p class="doc-p">
+          If you have any questions about this policy or how we handle your data,
+          we're easy to reach.
+        </p>
+        <div class="contact-block">
+          <div class="contact-block-title">Papercargo</div>
+          <p>
+            For privacy requests, data deletion, or any questions about this policy —
+            email us directly. We don't have a legal department, you'll get a human.
+          </p>
+          <a href="mailto:hello@papercargo.com">hello@papercargo.com</a>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <a href="/" class="footer-logo">
+      <span>PAPERCARGO</span>
+      <span>✳</span>
+    </a>
+    <ul class="footer-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/ouroboros">Ouroboros</a></li>
+      <li><a href="mailto:hello@papercargo.com">Contact</a></li>
+    </ul>
+    <p class="footer-copy">© 2026 Papercargo</p>
+  </footer>
+
+  <script>
+    // Cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.transform = `translate(${mx}px, ${my}px) translate(-50%,-50%)`;
+    });
+
+    (function animRing() {
+      rx += (mx - rx) * 0.1;
+      ry += (my - ry) * 0.1;
+      ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%,-50%)`;
+      requestAnimationFrame(animRing);
+    })();
+
+    // Scroll reveal
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('.doc-section').forEach(el => obs.observe(el));
+
+    // Highlight active sidebar link on scroll
+    const sections = document.querySelectorAll('.doc-section');
+    const links = document.querySelectorAll('.sidebar-nav a');
+
+    const linkObs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          links.forEach(l => l.style.borderLeftColor = 'transparent');
+          const active = document.querySelector(`.sidebar-nav a[href="#${entry.target.id}"]`);
+          if (active) active.style.borderLeftColor = 'var(--iris)';
+        }
+      });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+
+    sections.forEach(s => linkObs.observe(s));
+  </script>
+
+</body>
+</html>
