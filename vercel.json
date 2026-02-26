@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/ouroboros", "destination": "/ouroboros/index.html" },
+    { "source": "/ouroboros/(.*)", "destination": "/ouroboros/$1" }
+  ]
+}

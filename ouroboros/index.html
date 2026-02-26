@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ouroboros — Prompt. Smarter. by Papercargo</title>
+  <meta name="description" content="Ouroboros improves your AI prompts before you send them. See the difference. Always your call.">
+  <meta property="og:title" content="Ouroboros — Prompt. Smarter.">
+  <meta property="og:description" content="The browser extension that makes your AI prompts work harder. By Papercargo.">
+  <meta property="og:image" content="./og-image.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── Reset & Tokens ──────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:        #080B2A;
+      --navy-mid:    #0D1040;
+      --navy-light:  #141760;
+      --white:       #FFFFFF;
+      --white-dim:   rgba(255,255,255,0.6);
+      --white-ghost: rgba(255,255,255,0.15);
+      --white-trace: rgba(255,255,255,0.06);
+      --accent:      #b4ff64;
+      --iris-1:      #c084fc;
+      --iris-2:      #818cf8;
+      --iris-3:      #67e8f9;
+
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-body:    'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--navy);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── Custom cursor ───────────────────────────────────────────────────── */
+    .cursor {
+      width: 8px; height: 8px;
+      background: var(--white);
+      border-radius: 50%;
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.15s ease, background 0.2s;
+      transform: translate(-50%, -50%);
+    }
+
+    .cursor-ring {
+      width: 32px; height: 32px;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9998;
+      transition: transform 0.4s ease, width 0.3s, height 0.3s, border-color 0.3s;
+      transform: translate(-50%, -50%);
+    }
+
+    body:has(a:hover) .cursor-ring,
+    body:has(button:hover) .cursor-ring {
+      width: 48px; height: 48px;
+      border-color: var(--accent);
+    }
+
+    /* ── Grain overlay ───────────────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.4;
+    }
+
+    /* ── Nav ─────────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 24px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--white-trace);
+      backdrop-filter: blur(20px);
+      background: rgba(8,11,42,0.8);
+    }
+
+    .nav-logo img {
+      height: 22px;
+      filter: brightness(1);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--white-dim);
+      text-decoration: none;
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--white); }
+
+    .nav-cta {
+      background: var(--white) !important;
+      color: var(--navy) !important;
+      padding: 8px 20px !important;
+      border-radius: 100px !important;
+      font-weight: 500 !important;
+      font-size: 13px !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.06em !important;
+      transition: background 0.2s, transform 0.2s !important;
+    }
+
+    .nav-cta:hover {
+      background: var(--accent) !important;
+      color: var(--navy) !important;
+      transform: scale(1.03);
+    }
+
+    /* ── Hero ────────────────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      padding: 120px 24px 80px;
+      overflow: hidden;
+    }
+
+    .hero-orbit {
+      position: absolute;
+      width: 700px;
+      height: 700px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: orbit-float 8s ease-in-out infinite;
+      pointer-events: none;
+      opacity: 0.85;
+    }
+
+    .hero-orbit img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Glow behind orbit */
+    .hero-glow {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(ellipse at center,
+        rgba(129, 140, 248, 0.15) 0%,
+        rgba(192, 132, 252, 0.08) 40%,
+        transparent 70%
+      );
+      pointer-events: none;
+      animation: glow-pulse 4s ease-in-out infinite;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--white-dim);
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fade-up 0.8s ease 0.2s forwards;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(80px, 14vw, 180px);
+      line-height: 0.92;
+      letter-spacing: -0.01em;
+      color: var(--white);
+      margin-bottom: 8px;
+      opacity: 0;
+      animation: fade-up 0.8s ease 0.4s forwards;
+    }
+
+    .hero-tagline {
+      font-family: var(--font-display);
+      font-size: clamp(24px, 4vw, 48px);
+      letter-spacing: 0.15em;
+      color: var(--white-dim);
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: fade-up 0.8s ease 0.6s forwards;
+    }
+
+    .hero-tagline span {
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      color: var(--white-dim);
+      max-width: 420px;
+      margin: 0 auto 48px;
+      line-height: 1.7;
+      opacity: 0;
+      animation: fade-up 0.8s ease 0.8s forwards;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      animation: fade-up 0.8s ease 1s forwards;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--navy);
+      padding: 14px 32px;
+      border-radius: 100px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      cursor: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 40px rgba(180, 255, 100, 0.2);
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.04) translateY(-1px);
+      box-shadow: 0 0 60px rgba(180, 255, 100, 0.35);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--white-dim);
+      padding: 14px 32px;
+      border-radius: 100px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid var(--white-ghost);
+      cursor: none;
+      transition: all 0.2s;
+    }
+
+    .btn-ghost:hover {
+      color: var(--white);
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      animation: fade-up 0.8s ease 1.4s forwards;
+    }
+
+    .hero-scroll span {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--white-ghost);
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--white-ghost), transparent);
+      animation: scroll-pulse 2s ease-in-out infinite;
+    }
+
+    /* ── Before / After section ──────────────────────────────────────────── */
+    .section-demo {
+      padding: 120px 48px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--white-dim);
+      margin-bottom: 16px;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    .section-label.visible { opacity: 1; }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(48px, 7vw, 96px);
+      line-height: 0.95;
+      letter-spacing: -0.01em;
+      margin-bottom: 64px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .section-title.visible { opacity: 1; transform: translateY(0); }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0;
+      align-items: start;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease 0.2s, transform 0.7s ease 0.2s;
+    }
+
+    .demo-grid.visible { opacity: 1; transform: translateY(0); }
+
+    .demo-card {
+      background: var(--navy-mid);
+      border: 1px solid var(--white-trace);
+      border-radius: 16px;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .demo-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--white-trace) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .demo-card-label {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--white-dim);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .demo-card-label::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--white-ghost);
+    }
+
+    .demo-card.after .demo-card-label::before {
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    .demo-prompt {
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--white-dim);
+      font-style: italic;
+    }
+
+    .demo-card.after .demo-prompt {
+      color: var(--white);
+      font-style: normal;
+    }
+
+    .demo-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 24px;
+      padding-top: 60px;
+    }
+
+    .arrow-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--white-trace);
+      border: 1px solid var(--white-ghost);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 18px;
+    }
+
+    .demo-changes {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .demo-change {
+      font-size: 11px;
+      color: var(--accent);
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .demo-change::before {
+      content: '+';
+      flex-shrink: 0;
+      opacity: 0.6;
+    }
+
+    /* ── How it works ────────────────────────────────────────────────────── */
+    .section-how {
+      padding: 120px 48px;
+      border-top: 1px solid var(--white-trace);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section-how::before {
+      content: '';
+      position: absolute;
+      top: 0; right: -200px;
+      width: 600px; height: 600px;
+      background: radial-gradient(ellipse,
+        rgba(192,132,252,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .how-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      margin-top: 64px;
+    }
+
+    .step-card {
+      background: var(--white-trace);
+      padding: 48px 40px;
+      position: relative;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .step-card:first-child { border-radius: 16px 0 0 16px; }
+    .step-card:last-child { border-radius: 0 16px 16px 0; }
+
+    .step-card.visible { opacity: 1; transform: translateY(0); }
+    .step-card:nth-child(2) { transition-delay: 0.15s; }
+    .step-card:nth-child(3) { transition-delay: 0.3s; }
+
+    .step-number {
+      font-family: var(--font-display);
+      font-size: 80px;
+      line-height: 1;
+      color: var(--white-trace);
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+    }
+
+    .step-title {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 12px;
+      color: var(--white);
+    }
+
+    .step-desc {
+      font-size: 14px;
+      color: var(--white-dim);
+      line-height: 1.7;
+    }
+
+    /* ── Platforms ───────────────────────────────────────────────────────── */
+    .section-platforms {
+      padding: 80px 48px;
+      border-top: 1px solid var(--white-trace);
+    }
+
+    .platforms-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 40px;
+    }
+
+    .platforms-label {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--white-dim);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .platforms-divider {
+      width: 1px;
+      height: 40px;
+      background: var(--white-trace);
+      flex-shrink: 0;
+    }
+
+    .platforms-list {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .platform-name {
+      font-size: 13px;
+      color: var(--white-dim);
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+
+    .platform-name:hover { color: var(--white); }
+
+    /* ── Waitlist ─────────────────────────────────────────────────────────── */
+    .section-waitlist {
+      padding: 160px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .waitlist-orbit {
+      position: absolute;
+      width: 800px;
+      height: 800px;
+      top: 50%;
+      left: 60%;
+      transform: translate(-50%, -50%);
+      opacity: 0.15;
+      pointer-events: none;
+      animation: orbit-float 12s ease-in-out infinite reverse;
+    }
+
+    .waitlist-orbit img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+    }
+
+    .waitlist-inner {
+      max-width: 600px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .waitlist-title {
+      font-family: var(--font-display);
+      font-size: clamp(56px, 8vw, 120px);
+      line-height: 0.92;
+      letter-spacing: -0.01em;
+      margin-bottom: 24px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .waitlist-title.visible { opacity: 1; transform: translateY(0); }
+
+    .waitlist-sub {
+      font-size: 16px;
+      color: var(--white-dim);
+      line-height: 1.7;
+      margin-bottom: 48px;
+      max-width: 440px;
+      opacity: 0;
+      transition: opacity 0.7s ease 0.2s;
+    }
+
+    .waitlist-sub.visible { opacity: 1; }
+
+    .waitlist-form {
+      display: flex;
+      gap: 12px;
+      max-width: 480px;
+      opacity: 0;
+      transition: opacity 0.7s ease 0.3s;
+    }
+
+    .waitlist-form.visible { opacity: 1; }
+
+    .waitlist-input {
+      flex: 1;
+      background: var(--white-trace);
+      border: 1px solid var(--white-ghost);
+      border-radius: 100px;
+      padding: 14px 24px;
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .waitlist-input::placeholder { color: rgba(255,255,255,0.3); }
+    .waitlist-input:focus { border-color: rgba(255,255,255,0.3); }
+
+    .waitlist-btn {
+      background: var(--accent);
+      color: var(--navy);
+      border: none;
+      border-radius: 100px;
+      padding: 14px 28px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: none;
+      white-space: nowrap;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .waitlist-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 40px rgba(180,255,100,0.3);
+    }
+
+    .waitlist-success {
+      display: none;
+      font-size: 14px;
+      color: var(--accent);
+      margin-top: 16px;
+      letter-spacing: 0.04em;
+    }
+
+    .waitlist-error {
+      display: none;
+      font-size: 13px;
+      color: #f87171;
+      margin-top: 12px;
+    }
+
+    /* Enterprise strip */
+    .enterprise-strip {
+      margin-top: 80px;
+      padding: 32px 40px;
+      background: var(--white-trace);
+      border: 1px solid var(--white-ghost);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      max-width: 600px;
+      opacity: 0;
+      transition: opacity 0.7s ease 0.5s;
+    }
+
+    .enterprise-strip.visible { opacity: 1; }
+
+    .enterprise-text .label {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--white-dim);
+      margin-bottom: 4px;
+    }
+
+    .enterprise-text .title {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--white);
+    }
+
+    .enterprise-text .sub {
+      font-size: 13px;
+      color: var(--white-dim);
+      margin-top: 4px;
+    }
+
+    .enterprise-link {
+      color: var(--white-dim);
+      text-decoration: none;
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: 1px solid var(--white-ghost);
+      padding: 10px 20px;
+      border-radius: 100px;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .enterprise-link:hover {
+      color: var(--white);
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    /* ── Footer ──────────────────────────────────────────────────────────── */
+    footer {
+      padding: 48px;
+      border-top: 1px solid var(--white-trace);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .footer-logo img { height: 18px; }
+
+    .footer-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 12px;
+      color: rgba(255,255,255,0.3);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--white-dim); }
+
+    .footer-copy {
+      font-size: 12px;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Animations ──────────────────────────────────────────────────────── */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes orbit-float {
+      0%, 100% { transform: translate(-50%, -50%) rotate(-2deg) scale(1); }
+      50%       { transform: translate(-50%, -52%) rotate(2deg) scale(1.02); }
+    }
+
+    @keyframes glow-pulse {
+      0%, 100% { opacity: 0.6; transform: translate(-50%,-50%) scale(1); }
+      50%       { opacity: 1;   transform: translate(-50%,-50%) scale(1.1); }
+    }
+
+    @keyframes scroll-pulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(1); }
+      50%       { opacity: 0.8; transform: scaleY(1.2); }
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 20px 24px; }
+      .nav-links { display: none; }
+      .demo-grid { grid-template-columns: 1fr; }
+      .demo-arrow { padding: 16px 0; transform: rotate(90deg); }
+      .steps-grid { grid-template-columns: 1fr; gap: 2px; }
+      .step-card:first-child { border-radius: 16px 16px 0 0; }
+      .step-card:last-child { border-radius: 0 0 16px 16px; }
+      .platforms-inner { flex-direction: column; align-items: flex-start; }
+      .platforms-divider { display: none; }
+      .section-demo, .section-how, .section-waitlist, .section-platforms { padding: 80px 24px; }
+      footer { flex-direction: column; align-items: flex-start; gap: 20px; }
+      .hero-orbit { width: 400px; height: 400px; }
+      .enterprise-strip { flex-direction: column; align-items: flex-start; }
+      .waitlist-form { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Custom cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursor-ring"></div>
+
+  <!-- Nav -->
+  <nav>
+    <a href="/" class="nav-logo">
+      <img src="./logo.png" alt="Papercargo">
+    </a>
+    <ul class="nav-links">
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#waitlist">Waitlist</a></li>
+      <li><a href="mailto:hello@papercargo.com">Enterprise</a></li>
+      <li><a href="#waitlist" class="nav-cta">Get early access</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-orbit">
+      <img src="./orbit-bg.png" alt="">
+    </div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Introducing Ouroboros by Papercargo</p>
+      <h1 class="hero-title">OUROBOROS</h1>
+      <p class="hero-tagline">Prompt. <span>Smarter.</span></p>
+      <p class="hero-sub">
+        The browser extension that improves your AI prompts before you send them.
+        See exactly what changed. Always your call.
+      </p>
+      <div class="hero-actions">
+        <a href="#waitlist" class="btn-primary">Join the waitlist</a>
+        <a href="#demo" class="btn-ghost">See it in action</a>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- Demo: Before / After -->
+  <section class="section-demo" id="demo">
+    <p class="section-label">The difference</p>
+    <h2 class="section-title">Before.<br>After.</h2>
+
+    <div class="demo-grid">
+      <div class="demo-card before">
+        <div class="demo-card-label">What you typed</div>
+        <p class="demo-prompt">
+          "write me something about our product launch for the marketing team"
+        </p>
+      </div>
+
+      <div class="demo-arrow">
+        <div class="arrow-icon">→</div>
+      </div>
+
+      <div class="demo-card after">
+        <div class="demo-card-label">What Ouroboros sends</div>
+        <p class="demo-prompt">
+          "You are a senior marketing copywriter. Write a concise internal announcement for our product launch targeting the marketing team. Include: key features, launch date, and 2-3 talking points for external communication. Tone: confident and energizing. Format: short paragraphs, no bullet points."
+        </p>
+        <div class="demo-changes">
+          <span class="demo-change">Added role and domain context</span>
+          <span class="demo-change">Specified audience and output format</span>
+          <span class="demo-change">Added tone and structural guidance</span>
+          <span class="demo-change">Defined required content elements</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section-how" id="how">
+    <div class="how-inner">
+      <p class="section-label">The process</p>
+      <h2 class="section-title">Three steps.<br>Better outputs.</h2>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">01</div>
+          <div class="step-title">Type naturally</div>
+          <p class="step-desc">
+            Write your prompt the way you always do. On ChatGPT, Claude, Gemini, Copilot — anywhere. Ouroboros watches quietly in the background.
+          </p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">02</div>
+          <div class="step-title">See the improvement</div>
+          <p class="step-desc">
+            Click the Ouroboros trigger. In seconds, see an improved version with a word-level diff showing exactly what changed and why.
+          </p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">03</div>
+          <div class="step-title">You decide</div>
+          <p class="step-desc">
+            Use the improved prompt, keep your original, or edit before sending. Nothing goes anywhere without your explicit approval. Always.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Platforms -->
+  <section class="section-platforms">
+    <div class="platforms-inner">
+      <span class="platforms-label">Works on</span>
+      <div class="platforms-divider"></div>
+      <div class="platforms-list">
+        <span class="platform-name">ChatGPT</span>
+        <span class="platform-name">Claude</span>
+        <span class="platform-name">Gemini</span>
+        <span class="platform-name">Copilot</span>
+        <span class="platform-name">Perplexity</span>
+        <span class="platform-name">Any text field</span>
+      </div>
+      <div class="platforms-divider"></div>
+      <span class="platforms-label">Chrome & Edge</span>
+    </div>
+  </section>
+
+  <!-- Waitlist -->
+  <section class="section-waitlist" id="waitlist">
+    <div class="waitlist-orbit">
+      <img src="./orbit-bg.png" alt="">
+    </div>
+    <div class="waitlist-inner">
+      <h2 class="waitlist-title">GET<br>EARLY<br>ACCESS</h2>
+      <p class="waitlist-sub">
+        Ouroboros is in beta. Join the waitlist and be among the first to use it.
+        Free during beta — bring your own API key or use Ollama locally.
+      </p>
+      <form class="waitlist-form" id="waitlist-form">
+        <input
+          type="email"
+          class="waitlist-input"
+          id="waitlist-email"
+          placeholder="your@email.com"
+          required
+        >
+        <button type="submit" class="waitlist-btn">Join waitlist</button>
+      </form>
+      <p class="waitlist-success" id="waitlist-success">
+        ✓ You're on the list. We'll be in touch.
+      </p>
+      <p class="waitlist-error" id="waitlist-error"></p>
+
+      <div class="enterprise-strip" id="enterprise-strip">
+        <div class="enterprise-text">
+          <div class="label">For teams</div>
+          <div class="title">Enterprise & Azure</div>
+          <div class="sub">Azure AD, admin policies, audit logs, group config.</div>
+        </div>
+        <a href="mailto:hello@papercargo.com" class="enterprise-link">
+          Talk to us
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-logo">
+      <img src="./logo.png" alt="Papercargo">
+    </div>
+    <ul class="footer-links">
+      <li><a href="/ouroboros/privacy">Privacy</a></li>
+      <li><a href="https://github.com/papercargo/ouroboros" target="_blank">GitHub</a></li>
+      <li><a href="mailto:hello@papercargo.com">Contact</a></li>
+    </ul>
+    <p class="footer-copy">© 2025 Papercargo. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // ── Supabase config ─────────────────────────────────────────────────
+    const SUPABASE_URL = 'https://igwbzpdtyuyowzgbissj.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlnd2J6cGR0eXV5b3d6Z2Jpc3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwNzM4ODMsImV4cCI6MjA4NzY0OTg4M30.z19H30GlmM75erma1V9yIdQLdC-BGE9kGiZ7AS1m-KI';
+
+    // ── Custom cursor ───────────────────────────────────────────────────
+    const cursor = document.getElementById('cursor');
+    const cursorRing = document.getElementById('cursor-ring');
+    let mouseX = 0, mouseY = 0;
+    let ringX = 0, ringY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursor.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+    });
+
+    // Smooth ring follow
+    function animateRing() {
+      ringX += (mouseX - ringX) * 0.12;
+      ringY += (mouseY - ringY) * 0.12;
+      cursorRing.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    // ── Scroll reveal ───────────────────────────────────────────────────
+    const revealEls = document.querySelectorAll(
+      '.section-label, .section-title, .demo-grid, .step-card, .waitlist-title, .waitlist-sub, .waitlist-form, .enterprise-strip'
+    );
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    revealEls.forEach(el => observer.observe(el));
+
+    // ── Waitlist form ───────────────────────────────────────────────────
+    const form = document.getElementById('waitlist-form');
+    const successMsg = document.getElementById('waitlist-success');
+    const errorMsg = document.getElementById('waitlist-error');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('waitlist-email').value.trim();
+      const btn = form.querySelector('.waitlist-btn');
+
+      btn.textContent = 'Joining...';
+      btn.disabled = true;
+      errorMsg.style.display = 'none';
+
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/ouroboros_waitlist`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Prefer': 'return=minimal',
+          },
+          body: JSON.stringify({
+            email,
+            use_case: 'beta',
+            plan: 'beta',
+          }),
+        });
+
+        if (res.status === 409) {
+          // Duplicate email — treat as success
+          form.style.display = 'none';
+          successMsg.textContent = '✓ You\'re already on the list.';
+          successMsg.style.display = 'block';
+          return;
+        }
+
+        if (!res.ok) throw new Error('Signup failed');
+
+        form.style.display = 'none';
+        successMsg.style.display = 'block';
+
+      } catch (err) {
+        btn.textContent = 'Join waitlist';
+        btn.disabled = false;
+        errorMsg.textContent = 'Something went wrong. Try again or email hello@papercargo.com';
+        errorMsg.style.display = 'block';
+      }
+    });
+  </script>
+
+</body>
+</html>
