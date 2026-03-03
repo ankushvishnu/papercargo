@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/ouroboros", "destination": "/ouroboros/index.html" },
+    { "source": "/privacy", "destination": "/ouroboros/privacy.html" },
     { "source": "/ouroboros/(.*)", "destination": "/ouroboros/$1" }
   ]
 }
