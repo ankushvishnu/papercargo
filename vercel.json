@@ -1,6 +1,11 @@
 {
   "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/privacy-policy", "destination": "/privacy.html" },
+
     { "source": "/ouroboros", "destination": "/ouroboros/index.html" },
+    { "source": "/ouroboros/privacy-policy", "destination": "/ouroboros/privacy.html" },
+
     { "source": "/ouroboros/(.*)", "destination": "/ouroboros/$1" }
   ]
 }
